@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-TRM ASL Recognition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .video-container {
+            position: relative;
+            background: #0f0f1a;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        #webcam, #canvas {
+            width: 100%;
+            display: block;
+            border-radius: 16px;
+        }
+
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .controls {
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            color: white;
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: #00d4ff;
+            color: #1a1a2e;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .start-btn:disabled {
+            background: #444;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-panel {
+            background: #0f0f1a;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .prediction-display {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .predicted-letter {
+            font-size: 8rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .confidence {
+            font-size: 1.5rem;
+            color: #00d4ff;
+            margin-top: 10px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status.loading {
+            color: #ffc107;
+        }
+
+        .status.ready {
+            color: #00d4ff;
+        }
+
+        .status.error {
+            color: #ff4444;
+        }
+
+        .top-predictions {
+            margin-top: 20px;
+        }
+
+        .top-predictions h3 {
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 15px;
+        }
+
+        .prediction-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .prediction-label {
+            width: 60px;
+            font-weight: bold;
+        }
+
+        .prediction-bar-bg {
+            flex: 1;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .prediction-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            transition: width 0.2s;
+        }
+
+        .prediction-value {
+            width: 60px;
+            text-align: right;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        .no-hand {
+            color: #888;
+            font-size: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>S-TRM ASL Recognition</h1>
+            <p class="subtitle">Real-time American Sign Language recognition powered by AI</p>
+        </header>
+
+        <div class="main-content">
+            <div class="video-section">
+                <div class="video-container">
+                    <video id="webcam" autoplay playsinline></video>
+                    <canvas id="canvas"></canvas>
+                </div>
+                <div class="controls">
+                    <div class="mode-selector">
+                        <button class="mode-btn active" data-mode="SPELLING">SPELLING (A-Y)</button>
+                        <button class="mode-btn" data-mode="WORD">WORDS (Gestures)</button>
+                    </div>
+                    <button class="start-btn" id="startBtn">Start Camera</button>
+                </div>
+            </div>
+
+            <div class="results-panel">
+                <div class="status loading" id="status">Loading model...</div>
+
+                <div class="prediction-display">
+                    <div class="predicted-letter" id="prediction">-</div>
+                    <div class="confidence" id="confidence">--</div>
+                </div>
+
+                <div class="top-predictions" id="topPredictions">
+                    <h3>Top Predictions</h3>
+                    <div id="predictionBars"></div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="fpsValue">0</div>
+                        <div class="stat-label">FPS</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="latencyValue">0</div>
+                        <div class="stat-label">Latency (ms)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="modelSize">79K</div>
+                        <div class="stat-label">Parameters</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Developed for IPSSI MIA4 - 2025 |
+               <a href="https://github.com/Hakim78/AI-SignLanguage" target="_blank">GitHub</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                Model: S-TRM (Stateful Tiny Recursive Model) |
+                Detection: MediaPipe Hands |
+                Inference: ONNX Runtime Web
+            </p>
+        </footer>
+    </div>
+
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
+
+    <!-- ONNX Runtime Web -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.16.3/dist/ort.min.js"></script>
+
+    <script>
+        // Global state
+        let session = null;
+        let config = null;
+        let camera = null;
+        let isRunning = false;
+        let currentMode = "SPELLING";
+        let frameCount = 0;
+        let lastFpsTime = performance.now();
+        let fps = 0;
+
+        // DOM elements
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const statusEl = document.getElementById('status');
+        const predictionEl = document.getElementById('prediction');
+        const confidenceEl = document.getElementById('confidence');
+        const fpsValueEl = document.getElementById('fpsValue');
+        const latencyValueEl = document.getElementById('latencyValue');
+        const predictionBarsEl = document.getElementById('predictionBars');
+
+        // Mode buttons
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMode = btn.dataset.mode;
+            });
+        });
+
+        // Initialize MediaPipe Hands
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
+
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.5,
+            minTrackingConfidence: 0.5
+        });
+
+        hands.onResults(onHandResults);
+
+        // Load ONNX model and config
+        async function loadModel() {
+            try {
+                statusEl.textContent = "Loading configuration...";
+                statusEl.className = "status loading";
+
+                // Load config
+                const configResponse = await fetch('config.json');
+                config = await configResponse.json();
+
+                statusEl.textContent = "Loading ONNX model...";
+
+                // Load ONNX model
+                session = await ort.InferenceSession.create('model.onnx');
+
+                statusEl.textContent = "Ready! Click 'Start Camera' to begin.";
+                statusEl.className = "status ready";
+                startBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Failed to load model:", error);
+                statusEl.textContent = `Error: ${error.message}`;
+                statusEl.className = "status error";
+            }
+        }
+
+        // Normalize landmarks using scaler
+        function normalize(landmarks) {
+            const normalized = new Float32Array(63);
+            for (let i = 0; i < 63; i++) {
+                normalized[i] = (landmarks[i] - config.scaler.mean[i]) / config.scaler.scale[i];
+            }
+            return normalized;
+        }
+
+        // Apply mode mask
+        function applyModeMask(probs) {
+            const masked = [...probs];
+            const dynamicClasses = new Set(config.dynamic_classes);
+
+            if (currentMode === "SPELLING") {
+                // Zero out dynamic classes
+                config.class_names.forEach((name, idx) => {
+                    if (dynamicClasses.has(name)) {
+                        masked[idx] = 0;
+                    }
+                });
+            } else {
+                // Zero out static classes
+                config.class_names.forEach((name, idx) => {
+                    if (!dynamicClasses.has(name)) {
+                        masked[idx] = 0;
+                    }
+                });
+            }
+
+            // Renormalize
+            const sum = masked.reduce((a, b) => a + b, 0);
+            if (sum > 0) {
+                for (let i = 0; i < masked.length; i++) {
+                    masked[i] /= sum;
+                }
+            }
+
+            return masked;
+        }
+
+        // Softmax
+        function softmax(logits) {
+            const maxLogit = Math.max(...logits);
+            const exps = logits.map(x => Math.exp(x - maxLogit));
+            const sum = exps.reduce((a, b) => a + b, 0);
+            return exps.map(x => x / sum);
+        }
+
+        // Process hand results
+        async function onHandResults(results) {
+            const startTime = performance.now();
+
+            // Draw video frame
+            ctx.save();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
+
+            if (!results.multiHandLandmarks || results.multiHandLandmarks.length === 0) {
+                predictionEl.textContent = "-";
+                predictionEl.className = "predicted-letter no-hand";
+                confidenceEl.textContent = "No hand detected";
+                predictionBarsEl.innerHTML = "";
+                ctx.restore();
+                return;
+            }
+
+            predictionEl.className = "predicted-letter";
+
+            // Draw landmarks
+            const landmarks = results.multiHandLandmarks[0];
+            drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#00FF00', lineWidth: 2});
+            drawLandmarks(ctx, landmarks, {color: '#00d4ff', lineWidth: 1, radius: 3});
+
+            // Extract coordinates (63 dims)
+            const coords = [];
+            for (const lm of landmarks) {
+                coords.push(lm.x, lm.y, lm.z);
+            }
+
+            // Normalize
+            const normalized = normalize(coords);
+
+            // Run inference
+            try {
+                const tensor = new ort.Tensor('float32', normalized, [1, 63]);
+                const outputs = await session.run({ landmarks: tensor });
+                const logits = outputs.logits.data;
+
+                // Softmax
+                const probs = softmax(Array.from(logits));
+
+                // Apply mode mask
+                const maskedProbs = applyModeMask(probs);
+
+                // Get top predictions
+                const indexed = maskedProbs.map((p, i) => ({ prob: p, idx: i }));
+                indexed.sort((a, b) => b.prob - a.prob);
+                const top5 = indexed.slice(0, 5);
+
+                // Update display
+                const topPred = top5[0];
+                const predClass = config.class_names[topPred.idx];
+                const predConf = (topPred.prob * 100).toFixed(0);
+
+                predictionEl.textContent = predClass;
+                confidenceEl.textContent = `${predConf}% confidence`;
+
+                // Update bars
+                predictionBarsEl.innerHTML = top5.map(({ prob, idx }) => `
+                    <div class="prediction-bar">
+                        <span class="prediction-label">${config.class_names[idx]}</span>
+                        <div class="prediction-bar-bg">
+                            <div class="prediction-bar-fill" style="width: ${(prob * 100).toFixed(0)}%"></div>
+                        </div>
+                        <span class="prediction-value">${(prob * 100).toFixed(0)}%</span>
+                    </div>
+                `).join('');
+
+                // Draw prediction on canvas
+                ctx.fillStyle = '#00d4ff';
+                ctx.font = 'bold 48px Arial';
+                ctx.fillText(predClass, 20, 60);
+                ctx.font = '24px Arial';
+                ctx.fillText(`${predConf}%`, 20, 95);
+
+            } catch (error) {
+                console.error("Inference error:", error);
+            }
+
+            ctx.restore();
+
+            // Update latency
+            const latency = (performance.now() - startTime).toFixed(0);
+            latencyValueEl.textContent = latency;
+
+            // Update FPS
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFpsTime >= 1000) {
+                fps = frameCount;
+                frameCount = 0;
+                lastFpsTime = now;
+                fpsValueEl.textContent = fps;
+            }
+        }
+
+        // Start camera
+        async function startCamera() {
+            if (isRunning) {
+                // Stop
+                if (camera) {
+                    camera.stop();
+                }
+                isRunning = false;
+                startBtn.textContent = "Start Camera";
+                statusEl.textContent = "Camera stopped.";
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { width: 640, height: 480, facingMode: 'user' }
+                });
+
+                video.srcObject = stream;
+                await video.play();
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                camera = new Camera(video, {
+                    onFrame: async () => {
+                        await hands.send({ image: video });
+                    },
+                    width: 640,
+                    height: 480
+                });
+
+                camera.start();
+                isRunning = true;
+                startBtn.textContent = "Stop Camera";
+                statusEl.textContent = "Running...";
+                statusEl.className = "status ready";
+
+            } catch (error) {
+                console.error("Camera error:", error);
+                statusEl.textContent = `Camera error: ${error.message}`;
+                statusEl.className = "status error";
+            }
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startCamera);
+        startBtn.disabled = true;
+
+        // Initialize
+        loadModel();
+    </script>
+</body>
+</html>

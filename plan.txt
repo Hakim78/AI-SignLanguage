@@ -1,0 +1,13 @@
+prochaine version optimisée avec plus de mots : 
+
+Télécharger WLASL : C'est un dataset open-source de 2000 mots (50Go+).
+
+Filtrer : Ne garde que les 100 mots les plus utiles pour tes lunettes (Toilettes, Manger, Boire, Aider, Urgence, etc.).
+
+Lancer le "Gros Entraînement" :
+
+Sur Kaggle.
+
+Pendant 100 ou 200 epochs (là ça aura du sens).
+
+Avec le même code train_kaggle.py (il est déjà prêt pour ça).

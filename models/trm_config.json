@@ -1,0 +1,1 @@
+{"input_dim": 63, "num_classes": 31, "class_names": ["A", "B", "C", "D", "E", "F", "G", "H", "HELLO", "I", "J", "K", "L", "M", "N", "NO", "O", "P", "Q", "R", "S", "SORRY", "T", "THANKYOU", "U", "V", "W", "X", "Y", "YES", "Z"], "latent_dim": 64, "hidden_dim": 128, "n_latent": 6, "T_deep": 3, "dropout": 0.2, "sequence_mode": true, "best_val_acc": 0.965603298611111}
