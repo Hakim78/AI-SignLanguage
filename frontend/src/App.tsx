@@ -57,100 +57,91 @@ function App() {
       case 'running':
         return t('running');
       case 'error':
-        return 'Error loading model';
+        return 'Error';
       default:
         return t('loading');
     }
   }, [status, loadingProgress, t]);
 
   const steps = lang === 'en' ? [
-    { num: '1', title: 'Enable Camera', desc: 'Click Start Camera to activate your webcam. All processing stays on your device.' },
-    { num: '2', title: 'Show Sign', desc: 'Position your hand 30-50cm from camera with good lighting and plain background.' },
-    { num: '3', title: 'Get Result', desc: 'See real-time ASL recognition with confidence scores and latency metrics.' }
+    { title: 'Start Camera', desc: 'Enable your webcam to begin. All processing happens locally on your device.' },
+    { title: 'Show a Sign', desc: 'Position your hand 30-50cm from camera with good lighting.' },
+    { title: 'Get Results', desc: 'See real-time predictions with confidence scores.' }
   ] : [
-    { num: '1', title: 'Activer la Caméra', desc: 'Cliquez sur Démarrer pour activer votre webcam. Tout le traitement reste sur votre appareil.' },
-    { num: '2', title: 'Montrer le Signe', desc: 'Positionnez votre main à 30-50cm de la caméra avec un bon éclairage.' },
-    { num: '3', title: 'Obtenir le Résultat', desc: 'Voyez la reconnaissance ASL en temps réel avec les scores de confiance.' }
+    { title: 'Demarrer', desc: 'Activez votre webcam. Tout le traitement se fait localement.' },
+    { title: 'Montrer un Signe', desc: 'Positionnez votre main a 30-50cm avec un bon eclairage.' },
+    { title: 'Resultats', desc: 'Voyez les predictions en temps reel avec les scores.' }
   ];
 
-  const features = lang === 'en' ? [
-    { icon: '🔒', title: '100% Private', desc: 'All processing happens locally in your browser. No data is sent anywhere.' },
-    { icon: '⚡', title: 'Real-time', desc: 'Instant recognition with ~15ms latency using WebGL acceleration.' },
-    { icon: '🎯', title: '31 Signs', desc: 'Recognizes A-Z letters plus common words like HELLO, YES, NO.' },
-    { icon: '🧠', title: 'Tiny Model', desc: 'Only 79K parameters (0.3MB) - efficient and fast on any device.' }
-  ] : [
-    { icon: '🔒', title: '100% Privé', desc: 'Tout le traitement se fait localement dans votre navigateur.' },
-    { icon: '⚡', title: 'Temps Réel', desc: 'Reconnaissance instantanée avec ~15ms de latence via WebGL.' },
-    { icon: '🎯', title: '31 Signes', desc: 'Reconnaît les lettres A-Z plus des mots comme HELLO, YES, NO.' },
-    { icon: '🧠', title: 'Modèle Léger', desc: 'Seulement 79K paramètres (0.3MB) - efficace sur tout appareil.' }
+  const specs = [
+    { label: 'Architecture', value: 'S-TRM' },
+    { label: lang === 'en' ? 'Parameters' : 'Parametres', value: '79K' },
+    { label: lang === 'en' ? 'Size' : 'Taille', value: '0.3 MB' },
+    { label: 'Classes', value: '31' },
+    { label: 'Runtime', value: 'ONNX' },
+    { label: 'Detection', value: 'MediaPipe' }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-main">
-      <Header lang={lang} onToggleLang={handleToggleLang} t={t} />
+      <Header lang={lang} onToggleLang={handleToggleLang} />
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="badge mb-6">
-            <span className="text-violet-400">✨</span>
-            {lang === 'en' ? 'AI-Powered Demo' : 'Démo IA Gratuite'}
-          </div>
-
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
-            {lang === 'en' ? 'Recognize Sign Language' : 'Reconnaissance de la'}
+      {/* Hero */}
+      <section className="pt-28 sm:pt-32 pb-12 sm:pb-16 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-violet-400 text-sm font-medium tracking-wide uppercase mb-4">
+            {lang === 'en' ? 'Real-time AI Demo' : 'Demo IA Temps Reel'}
+          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+            {lang === 'en' ? 'Sign Language' : 'Reconnaissance'}
             <br />
-            <span className="gradient-text">
-              {lang === 'en' ? 'in Real-Time' : 'Langue des Signes'}
+            <span className="text-gradient">
+              {lang === 'en' ? 'Recognition' : 'Langue des Signes'}
             </span>
           </h1>
-
-          <p className="text-gray-400 text-lg sm:text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text-zinc-400 text-base sm:text-lg max-w-xl mx-auto mb-8">
             {lang === 'en'
-              ? 'Experience real-time ASL recognition powered by S-TRM architecture. 100% browser-based, no server required.'
-              : 'Découvrez la reconnaissance ASL en temps réel propulsée par l\'architecture S-TRM. 100% dans le navigateur.'}
+              ? 'Experience ASL recognition powered by S-TRM architecture. Runs entirely in your browser.'
+              : 'Decouvrez la reconnaissance ASL propulsee par S-TRM. Fonctionne entierement dans votre navigateur.'}
           </p>
-
-          <a href="#demo" className="btn-primary text-lg">
-            {lang === 'en' ? 'Try Demo' : 'Essayer la Démo'}
-            <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 5v14M5 12l7 7 7-7"/>
-            </svg>
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="#demo" className="btn-primary w-full sm:w-auto">
+              {lang === 'en' ? 'Launch Demo' : 'Lancer la Demo'}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </a>
+            <a href="#about" className="btn-secondary w-full sm:w-auto">
+              {lang === 'en' ? 'Learn more' : 'En savoir plus'}
+            </a>
+          </div>
         </div>
       </section>
 
       {/* How it works */}
-      <section id="features" className="py-16 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-4">
-            {lang === 'en' ? 'How it' : 'Comment ça'}
-            <span className="gradient-text"> {lang === 'en' ? 'works?' : 'marche ?'}</span>
-          </h2>
-          <p className="text-gray-400 text-center mb-12 max-w-xl mx-auto">
-            {lang === 'en'
-              ? 'No complex setup. No account needed. Just results.'
-              : 'Pas d\'inscription complexe. Pas de compte requis. Juste des résultats.'}
-          </p>
+      <section id="how-it-works" className="py-12 sm:py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+              {lang === 'en' ? 'How it works' : 'Comment ca marche'}
+            </h2>
+            <p className="text-zinc-500 text-sm sm:text-base">
+              {lang === 'en' ? 'Three simple steps to get started' : 'Trois etapes simples pour commencer'}
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
             {steps.map((step, i) => (
-              <div key={i} className="text-center relative">
-                <div className="step-number">{step.num}</div>
-                <div className="icon-box mx-auto -mt-8 mb-4 relative z-10">
-                  <svg viewBox="0 0 24 24" className="w-6 h-6 text-violet-400" fill="currentColor">
-                    {i === 0 && <path d="M15 8v8H5V8h10m1-2H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4V7c0-.55-.45-1-1-1z"/>}
-                    {i === 1 && <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>}
-                    {i === 2 && <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>}
-                  </svg>
-                </div>
-                <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-gray-400 text-sm">{step.desc}</p>
-
-                {i < 2 && (
-                  <div className="hidden md:block absolute top-16 right-0 translate-x-1/2 text-gray-600">
-                    - - - - →
+              <div key={i} className="relative">
+                <div className="card p-6 h-full">
+                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
+                    <span className="text-violet-400 font-semibold">{i + 1}</span>
                   </div>
+                  <h3 className="font-semibold mb-2">{step.title}</h3>
+                  <p className="text-zinc-500 text-sm leading-relaxed">{step.desc}</p>
+                </div>
+                {i < 2 && (
+                  <div className="hidden md:block step-line" />
                 )}
               </div>
             ))}
@@ -158,146 +149,156 @@ function App() {
         </div>
       </section>
 
-      {/* Demo Section */}
-      <section id="demo" className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-center mb-12">
-            {lang === 'en' ? 'Live' : 'Démo'}
-            <span className="gradient-text"> Demo</span>
-          </h2>
+      {/* Demo */}
+      <section id="demo" className="py-12 sm:py-16 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+              {lang === 'en' ? 'Live Demo' : 'Demo en Direct'}
+            </h2>
+            <p className="text-zinc-500 text-sm sm:text-base">
+              {lang === 'en' ? 'Try the model directly in your browser' : 'Testez le modele directement dans votre navigateur'}
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-6">
-            <VideoFeed
-              ref={videoFeedRef}
-              isRunning={isRunning}
-              currentMode={currentMode}
-              onModeChange={setCurrentMode}
-              onStartStop={handleStartStop}
-              isModelReady={isModelReady}
-              handDetected={handDetected}
-              t={t}
-            />
-
-            <PredictionPanel
-              status={status}
-              statusText={getStatusText()}
-              loadingProgress={loadingProgress}
-              prediction={prediction}
-              confidence={confidence}
-              topPredictions={topPredictions}
-              fps={fps}
-              latency={latency}
-              t={t}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div className="lg:col-span-3">
+              <VideoFeed
+                ref={videoFeedRef}
+                isRunning={isRunning}
+                currentMode={currentMode}
+                onModeChange={setCurrentMode}
+                onStartStop={handleStartStop}
+                isModelReady={isModelReady}
+                handDetected={handDetected}
+                t={t}
+              />
+            </div>
+            <div className="lg:col-span-2">
+              <PredictionPanel
+                status={status}
+                statusText={getStatusText()}
+                loadingProgress={loadingProgress}
+                prediction={prediction}
+                confidence={confidence}
+                topPredictions={topPredictions}
+                fps={fps}
+                latency={latency}
+                t={t}
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-16 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {features.map((feat, i) => (
-              <div key={i} className="feature-card text-center">
-                <div className="text-3xl mb-3">{feat.icon}</div>
-                <h3 className="font-semibold mb-2">{feat.title}</h3>
-                <p className="text-gray-400 text-sm">{feat.desc}</p>
-              </div>
-            ))}
+      {/* About */}
+      <section id="about" className="py-12 sm:py-16 px-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3">
+              {lang === 'en' ? 'About the Project' : 'A propos du Projet'}
+            </h2>
+            <p className="text-zinc-500 text-sm sm:text-base max-w-2xl mx-auto">
+              {lang === 'en'
+                ? 'S-TRM (Stateful Tiny Recursive Model) is a lightweight architecture designed for real-time sign language recognition. Developed as part of IPSSI MIA4 program.'
+                : 'S-TRM (Stateful Tiny Recursive Model) est une architecture legere concue pour la reconnaissance de la langue des signes en temps reel. Developpe dans le cadre du programme IPSSI MIA4.'}
+            </p>
           </div>
-        </div>
-      </section>
 
-      {/* About / Team */}
-      <section id="about" className="py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            {lang === 'en' ? 'About the' : 'À propos du'}
-            <span className="gradient-text"> {lang === 'en' ? 'Project' : 'Projet'}</span>
-          </h2>
-          <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-            {lang === 'en'
-              ? 'This project was developed as part of IPSSI MIA4 program. S-TRM (Stateful Tiny Recursive Model) is a lightweight architecture designed for real-time sign language recognition.'
-              : 'Ce projet a été développé dans le cadre du programme IPSSI MIA4. S-TRM (Stateful Tiny Recursive Model) est une architecture légère conçue pour la reconnaissance de la langue des signes en temps réel.'}
-          </p>
-
-          {/* Model Card */}
-          <div className="glass-card p-6 mb-8">
-            <h3 className="text-lg font-semibold mb-4 gradient-text">Model Card</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
-              {[
-                { label: 'Architecture', value: 'S-TRM' },
-                { label: 'Parameters', value: '~79K' },
-                { label: 'Size', value: '0.3 MB' },
-                { label: 'Classes', value: '31' },
-                { label: 'Runtime', value: 'ONNX' },
-                { label: 'Detection', value: 'MediaPipe' }
-              ].map((spec, i) => (
-                <div key={i} className="bg-white/5 rounded-lg p-3">
-                  <div className="text-gray-500 text-xs uppercase mb-1">{spec.label}</div>
-                  <div className="font-semibold">{spec.value}</div>
+          {/* Specs */}
+          <div className="card p-6 mb-8">
+            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wide mb-4">
+              {lang === 'en' ? 'Technical Specifications' : 'Specifications Techniques'}
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+              {specs.map((spec, i) => (
+                <div key={i} className="text-center p-3 rounded-lg bg-white/[0.02]">
+                  <div className="text-xs text-zinc-500 mb-1">{spec.label}</div>
+                  <div className="font-semibold text-sm">{spec.value}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Team */}
-          <h3 className="text-xl font-semibold mb-6">
-            {lang === 'en' ? 'Development Team' : 'Équipe de Développement'}
-          </h3>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="https://www.linkedin.com/in/hakim-djaalal78000/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="feature-card flex items-center gap-4 px-6 py-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center text-xl font-bold">
-                H
+          {/* Privacy notice */}
+          <div className="card p-6 mb-8 border-green-500/20">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
-              <div className="text-left">
-                <div className="font-semibold">Hakim Djaalal</div>
-                <div className="text-gray-400 text-sm flex items-center gap-1">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                  LinkedIn
-                </div>
+              <div>
+                <h3 className="font-semibold mb-1">
+                  {lang === 'en' ? '100% Private' : '100% Prive'}
+                </h3>
+                <p className="text-zinc-500 text-sm">
+                  {lang === 'en'
+                    ? 'All processing happens locally in your browser. No video data is ever sent to any server.'
+                    : 'Tout le traitement se fait localement dans votre navigateur. Aucune video n\'est envoyee a un serveur.'}
+                </p>
               </div>
-            </a>
+            </div>
+          </div>
 
-            <a
-              href="https://www.linkedin.com/in/mouad-aoughane-2943b6208/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="feature-card flex items-center gap-4 px-6 py-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-500 to-violet-500 flex items-center justify-center text-xl font-bold">
-                M
-              </div>
-              <div className="text-left">
-                <div className="font-semibold">Mouad Aoughane</div>
-                <div className="text-gray-400 text-sm flex items-center gap-1">
-                  <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                  LinkedIn
+          {/* Team */}
+          <div className="text-center">
+            <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wide mb-6">
+              {lang === 'en' ? 'Development Team' : 'Equipe de Developpement'}
+            </h3>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href="https://www.linkedin.com/in/hakim-djaalal78000/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card flex items-center gap-4 px-5 py-4 w-full sm:w-auto hover:border-violet-500/30"
+              >
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-violet-600 to-purple-600 flex items-center justify-center font-semibold">
+                  H
                 </div>
-              </div>
-            </a>
+                <div className="text-left">
+                  <div className="font-medium text-sm">Hakim Djaalal</div>
+                  <div className="text-zinc-500 text-xs flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    LinkedIn
+                  </div>
+                </div>
+              </a>
+              <a
+                href="https://www.linkedin.com/in/mouad-aoughane-2943b6208/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="card flex items-center gap-4 px-5 py-4 w-full sm:w-auto hover:border-violet-500/30"
+              >
+                <div className="w-11 h-11 rounded-full bg-gradient-to-br from-cyan-600 to-blue-600 flex items-center justify-center font-semibold">
+                  M
+                </div>
+                <div className="text-left">
+                  <div className="font-medium text-sm">Mouad Aoughane</div>
+                  <div className="text-zinc-500 text-xs flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    LinkedIn
+                  </div>
+                </div>
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="py-8 px-4 border-t border-white/5">
-        <div className="max-w-4xl mx-auto text-center text-gray-500 text-sm">
-          <p>IPSSI MIA4 - 2025 | S-TRM: Stateful Tiny Recursive Model</p>
-          <p className="mt-2">
-            {lang === 'en'
-              ? '100% client-side processing • No data collection • Open source'
-              : 'Traitement 100% côté client • Aucune collecte de données • Open source'}
-          </p>
+        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+          <div className="text-zinc-600 text-sm">
+            IPSSI MIA4 - 2025
+          </div>
+          <div className="text-zinc-600 text-xs">
+            {lang === 'en' ? 'Client-side processing' : 'Traitement cote client'} · {lang === 'en' ? 'No data collection' : 'Aucune collecte'}
+          </div>
         </div>
       </footer>
     </div>
