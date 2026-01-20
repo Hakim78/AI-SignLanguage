@@ -65,17 +65,30 @@ export function PredictionPanel({
       </div>
 
       {/* Main prediction */}
-      <div className="flex-1 flex flex-col items-center justify-center py-6 sm:py-8 bg-white/[0.01] rounded-xl border border-white/[0.04] mb-4">
-        <div className={`font-bold leading-none ${
+      <div className={`flex-1 flex flex-col items-center justify-center py-6 sm:py-8 rounded-xl border mb-4 transition-all duration-300 ${
+        confidence >= 90
+          ? 'bg-green-500/10 border-green-500/30'
+          : 'bg-white/[0.01] border-white/[0.04]'
+      }`}>
+        <div className={`font-bold leading-none transition-transform duration-200 ${
           prediction === '-'
             ? 'text-4xl sm:text-5xl text-zinc-700'
-            : 'text-6xl sm:text-7xl lg:text-8xl text-gradient'
+            : confidence >= 90
+              ? 'text-6xl sm:text-7xl lg:text-8xl text-gradient scale-110'
+              : 'text-6xl sm:text-7xl lg:text-8xl text-gradient'
         }`}>
           {prediction}
         </div>
         {confidence > 0 && (
-          <div className="mt-3 text-sm text-zinc-400">
-            <span className="text-violet-400 font-semibold">{confidence}%</span> {t('confidence')}
+          <div className="mt-3 flex items-center gap-2">
+            {confidence >= 90 && (
+              <svg className="w-4 h-4 text-green-500 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            )}
+            <span className={`text-sm ${confidence >= 90 ? 'text-green-400 font-semibold' : 'text-zinc-400'}`}>
+              <span className={confidence >= 90 ? 'text-green-400' : 'text-violet-400'}>{confidence}%</span> {t('confidence')}
+            </span>
           </div>
         )}
       </div>
@@ -86,36 +99,52 @@ export function PredictionPanel({
         <div className="space-y-2">
           {topPredictions.length > 0 ? (
             topPredictions.slice(0, 5).map((pred, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <span className="w-8 text-sm font-medium text-zinc-300">{pred.label}</span>
-                <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+              <div key={i} className={`flex items-center gap-3 p-2 rounded-lg transition-all duration-200 ${
+                i === 0 && pred.probability >= 80 ? 'bg-violet-500/10' : ''
+              }`}>
+                <span className={`w-8 text-sm font-medium ${
+                  i === 0 && pred.probability >= 80 ? 'text-violet-300' : 'text-zinc-300'
+                }`}>{pred.label}</span>
+                <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-violet-600 to-purple-500 rounded-full transition-all duration-200"
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      i === 0
+                        ? 'bg-gradient-to-r from-violet-600 to-purple-500'
+                        : 'bg-gradient-to-r from-zinc-600 to-zinc-500'
+                    }`}
                     style={{ width: `${pred.probability}%` }}
                   />
                 </div>
-                <span className="w-10 text-right text-xs text-zinc-500">{pred.probability}%</span>
+                <span className={`w-12 text-right text-xs font-medium ${
+                  i === 0 && pred.probability >= 80 ? 'text-violet-400' : 'text-zinc-500'
+                }`}>{pred.probability}%</span>
               </div>
             ))
           ) : (
-            <div className="text-zinc-700 text-sm text-center py-3">-</div>
+            <div className="text-zinc-700 text-sm text-center py-6 bg-white/[0.02] rounded-lg">
+              {t('waitingCam')}
+            </div>
           )}
         </div>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-3 pt-4 border-t border-white/[0.04]">
-        <div className="text-center">
-          <div className="text-lg sm:text-xl font-semibold text-violet-400">{fps}</div>
-          <div className="text-[10px] text-zinc-600 uppercase tracking-wide mt-0.5">FPS</div>
+      <div className="grid grid-cols-3 gap-2 pt-4 border-t border-white/[0.04]">
+        <div className="text-center p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+          <div className={`text-lg sm:text-xl font-semibold ${
+            fps >= 25 ? 'text-green-400' : fps >= 15 ? 'text-yellow-400' : 'text-violet-400'
+          }`}>{fps}</div>
+          <div className="text-[10px] text-zinc-500 uppercase tracking-wide mt-0.5">FPS</div>
         </div>
-        <div className="text-center">
-          <div className="text-lg sm:text-xl font-semibold text-violet-400">{latency}</div>
-          <div className="text-[10px] text-zinc-600 uppercase tracking-wide mt-0.5">MS</div>
+        <div className="text-center p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
+          <div className={`text-lg sm:text-xl font-semibold ${
+            latency <= 50 ? 'text-green-400' : latency <= 100 ? 'text-yellow-400' : 'text-violet-400'
+          }`}>{latency}</div>
+          <div className="text-[10px] text-zinc-500 uppercase tracking-wide mt-0.5">MS</div>
         </div>
-        <div className="text-center">
+        <div className="text-center p-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] transition-colors">
           <div className="text-lg sm:text-xl font-semibold text-violet-400">79K</div>
-          <div className="text-[10px] text-zinc-600 uppercase tracking-wide mt-0.5">{t('params')}</div>
+          <div className="text-[10px] text-zinc-500 uppercase tracking-wide mt-0.5">{t('params')}</div>
         </div>
       </div>
     </div>

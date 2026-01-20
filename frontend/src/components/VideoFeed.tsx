@@ -87,6 +87,33 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
           </div>
         </div>
 
+        {/* Hand position guide overlay */}
+        {isRunning && !handDetected && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+              {/* Animated guide box */}
+              <div className="absolute inset-0 border-2 border-dashed border-violet-500/50 rounded-2xl animate-pulse" />
+              {/* Corner markers */}
+              <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-violet-400 rounded-tl-lg" />
+              <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-violet-400 rounded-tr-lg" />
+              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-violet-400 rounded-bl-lg" />
+              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-violet-400 rounded-br-lg" />
+              {/* Hand icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <svg className="w-16 h-16 text-violet-400/60 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+                </svg>
+              </div>
+              {/* Instruction text */}
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
+                <span className="text-xs text-violet-300 bg-zinc-900/80 px-3 py-1 rounded-full">
+                  {t('positionHand')}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Placeholder */}
         {!isRunning && (
           <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50">

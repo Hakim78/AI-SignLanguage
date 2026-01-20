@@ -194,7 +194,7 @@ export function useSignRecognition() {
   }, []);
 
   // Initialize MediaPipe
-  const initMediaPipe = useCallback(() => {
+  const initMediaPipe = useCallback(async () => {
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
@@ -207,6 +207,10 @@ export function useSignRecognition() {
     });
 
     hands.onResults(onHandResults);
+
+    // Initialize MediaPipe (load WASM and model)
+    await hands.initialize();
+
     handsRef.current = hands;
   }, [onHandResults]);
 
@@ -224,6 +228,9 @@ export function useSignRecognition() {
     }
 
     try {
+      setStatus('loading');
+      setLoadingProgress(80);
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 640, height: 480, facingMode: 'user' }
       });
@@ -235,8 +242,11 @@ export function useSignRecognition() {
       canvas.height = video.videoHeight;
 
       if (!handsRef.current) {
-        initMediaPipe();
+        setLoadingProgress(90);
+        await initMediaPipe();
       }
+
+      setLoadingProgress(100);
 
       const camera = new Camera(video, {
         onFrame: async () => {
