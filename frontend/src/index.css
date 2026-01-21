@@ -23,11 +23,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Gradient backgrounds */
+/* Unified background */
 .bg-gradient-main {
-  background:
-    radial-gradient(ellipse 80% 60% at 50% -30%, rgba(124, 58, 237, 0.15), transparent),
-    radial-gradient(ellipse 50% 40% at 90% 70%, rgba(139, 92, 246, 0.08), transparent);
+  background-color: #0a0a0c;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%, rgba(124, 58, 237, 0.12), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 50%, rgba(139, 92, 246, 0.06), transparent 50%),
+    radial-gradient(ellipse 60% 40% at 0% 80%, rgba(99, 102, 241, 0.04), transparent 50%);
+}
+
+/* Section with subtle highlight */
+.section-alt {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01) 0%, transparent 50%, rgba(255,255,255,0.01) 100%);
 }
 
 /* Floating Navbar */
@@ -111,16 +118,6 @@ body {
 .status-running { color: #a855f7; }
 .status-error { color: #ef4444; }
 
-/* Step indicator */
-.step-line {
-  position: absolute;
-  top: 1.5rem;
-  left: calc(50% + 2rem);
-  right: calc(-50% + 2rem);
-  height: 1px;
-  background: linear-gradient(90deg, rgba(124, 58, 237, 0.5), rgba(124, 58, 237, 0.1));
-}
-
 /* Pulse animation for live indicator */
 @keyframes pulse-ring {
   0% { transform: scale(1); opacity: 1; }
@@ -149,15 +146,6 @@ body {
 
 .success-glow {
   animation: success-glow 1s ease-in-out;
-}
-
-/* Animated dash for How It Works arrows */
-@keyframes dash {
-  to { stroke-dashoffset: -100; }
-}
-
-.animate-dash {
-  animation: dash 8s linear infinite;
 }
 
 /* Focus styles */
