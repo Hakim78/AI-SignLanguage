@@ -1,4 +1,5 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface VideoFeedProps {
   isRunning: boolean;
@@ -78,20 +79,25 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
           </div>
         </div>
 
-        {/* Hand Position Guide */}
+        {/* Hand Position Guide with Lottie */}
         {isRunning && !handDetected && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="relative w-40 h-40 sm:w-48 sm:h-48">
-              {/* Minimal guide frame */}
+            <div className="relative w-48 h-48 sm:w-56 sm:h-56">
+              <DotLottieReact
+                src="https://lottie.host/7f8a3c4e-b5d9-4a1f-8e2c-6d9a7b5c3e4f/scan-hand.lottie"
+                loop
+                autoplay
+                style={{ width: '100%', height: '100%', opacity: 0.6 }}
+              />
+              {/* Frame overlay */}
               <div className="absolute inset-0 border border-dashed border-indigo-500/30 rounded-xl" />
-              {/* Corner markers */}
-              <div className="absolute top-0 left-0 w-4 h-4 border-t border-l border-indigo-400/60" />
-              <div className="absolute top-0 right-0 w-4 h-4 border-t border-r border-indigo-400/60" />
-              <div className="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-indigo-400/60" />
-              <div className="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-indigo-400/60" />
-              {/* Center icon */}
+              <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-indigo-400/60 rounded-tl" />
+              <div className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-indigo-400/60 rounded-tr" />
+              <div className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-indigo-400/60 rounded-bl" />
+              <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-indigo-400/60 rounded-br" />
+              {/* Center hand icon fallback */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="w-12 h-12 text-indigo-500/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-12 h-12 text-indigo-500/40 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
                 </svg>
               </div>
@@ -99,16 +105,30 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
           </div>
         )}
 
-        {/* Idle State */}
+        {/* Active Detection Animation */}
+        {isRunning && handDetected && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 pointer-events-none">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/20 border border-green-500/30">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-xs font-mono text-green-400">Processing</span>
+            </div>
+          </div>
+        )}
+
+        {/* Idle State with Lottie */}
         {!isRunning && (
-          <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/80">
+          <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/90">
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-zinc-900 border border-white/5 flex items-center justify-center">
-                <svg className="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+              <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-zinc-900/50 border border-white/5 flex items-center justify-center">
+                <DotLottieReact
+                  src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/camera.lottie"
+                  loop
+                  autoplay
+                  style={{ width: 48, height: 48 }}
+                />
               </div>
-              <p className="text-xs font-mono text-zinc-600">{t('waitingCam')}</p>
+              <p className="text-xs font-mono text-zinc-500">{t('waitingCam')}</p>
+              <p className="text-[10px] text-zinc-700 mt-1">Click Start to begin</p>
             </div>
           </div>
         )}
