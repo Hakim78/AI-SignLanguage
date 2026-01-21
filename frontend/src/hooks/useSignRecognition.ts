@@ -1,12 +1,46 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { Hands, HAND_CONNECTIONS } from '@mediapipe/hands';
-import type { Results } from '@mediapipe/hands';
-import { Camera } from '@mediapipe/camera_utils';
-import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import * as ort from 'onnxruntime-web';
 
-// Configure ONNX Runtime WASM paths to use CDN
+// Configure ONNX Runtime - use CDN for WASM files
 ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/';
+
+// MediaPipe types (loaded via script tags in index.html)
+declare global {
+  interface Window {
+    Hands: new (config: { locateFile: (file: string) => string }) => MediaPipeHands;
+    Camera: new (video: HTMLVideoElement, config: { onFrame: () => Promise<void>; width: number; height: number }) => MediaPipeCamera;
+    drawConnectors: (ctx: CanvasRenderingContext2D, landmarks: Landmark[], connections: [number, number][], style: { color: string; lineWidth: number }) => void;
+    drawLandmarks: (ctx: CanvasRenderingContext2D, landmarks: Landmark[], style: { color: string; lineWidth: number; radius: number }) => void;
+    HAND_CONNECTIONS: [number, number][];
+  }
+}
+
+interface Landmark {
+  x: number;
+  y: number;
+  z: number;
+}
+
+interface MediaPipeHands {
+  setOptions: (options: {
+    maxNumHands: number;
+    modelComplexity: number;
+    minDetectionConfidence: number;
+    minTrackingConfidence: number;
+  }) => void;
+  onResults: (callback: (results: HandResults) => void) => void;
+  send: (input: { image: HTMLVideoElement }) => Promise<void>;
+}
+
+interface MediaPipeCamera {
+  start: () => void;
+  stop: () => void;
+}
+
+interface HandResults {
+  image: HTMLVideoElement;
+  multiHandLandmarks?: Landmark[][];
+}
 
 interface Config {
   class_names: string[];
@@ -37,8 +71,8 @@ export function useSignRecognition() {
 
   const sessionRef = useRef<ort.InferenceSession | null>(null);
   const configRef = useRef<Config | null>(null);
-  const cameraRef = useRef<Camera | null>(null);
-  const handsRef = useRef<Hands | null>(null);
+  const cameraRef = useRef<MediaPipeCamera | null>(null);
+  const handsRef = useRef<MediaPipeHands | null>(null);
   const frameCountRef = useRef(0);
   const lastFpsTimeRef = useRef(performance.now());
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -90,7 +124,7 @@ export function useSignRecognition() {
   }, [currentMode]);
 
   // Handle hand results
-  const onHandResults = useCallback(async (results: Results) => {
+  const onHandResults = useCallback(async (results: HandResults) => {
     const startTime = performance.now();
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
@@ -113,8 +147,14 @@ export function useSignRecognition() {
     setHandDetected(true);
 
     const landmarks = results.multiHandLandmarks[0];
-    drawConnectors(ctx, landmarks, HAND_CONNECTIONS, { color: '#00d4ff', lineWidth: 2 });
-    drawLandmarks(ctx, landmarks, { color: '#7b2cbf', lineWidth: 1, radius: 4 });
+
+    // Use global MediaPipe drawing functions
+    if (window.drawConnectors && window.HAND_CONNECTIONS) {
+      window.drawConnectors(ctx, landmarks, window.HAND_CONNECTIONS, { color: '#00d4ff', lineWidth: 2 });
+    }
+    if (window.drawLandmarks) {
+      window.drawLandmarks(ctx, landmarks, { color: '#7b2cbf', lineWidth: 1, radius: 4 });
+    }
 
     const coords: number[] = [];
     for (const lm of landmarks) {
@@ -185,7 +225,10 @@ export function useSignRecognition() {
 
       setLoadingProgress(60);
 
-      sessionRef.current = await ort.InferenceSession.create('/model.onnx');
+      sessionRef.current = await ort.InferenceSession.create('/model.onnx', {
+        executionProviders: ['wasm'],
+        graphOptimizationLevel: 'all'
+      });
 
       setLoadingProgress(100);
       setStatus('ready');
@@ -197,22 +240,51 @@ export function useSignRecognition() {
   }, []);
 
   // Initialize MediaPipe
-  const initMediaPipe = useCallback(() => {
-    if (handsRef.current) return;
+  const initMediaPipe = useCallback(async (video: HTMLVideoElement): Promise<MediaPipeHands | null> => {
+    // Wait for MediaPipe to be available
+    const waitForMediaPipe = (): Promise<void> => {
+      return new Promise((resolve) => {
+        if (window.Hands) {
+          resolve();
+        } else {
+          const check = setInterval(() => {
+            if (window.Hands) {
+              clearInterval(check);
+              resolve();
+            }
+          }, 100);
+        }
+      });
+    };
 
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
+    await waitForMediaPipe();
+    console.log('MediaPipe Hands available, initializing...');
 
-    hands.setOptions({
-      maxNumHands: 1,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
+    try {
+      const hands = new window.Hands({
+        locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240/${file}`
+      });
 
-    hands.onResults(onHandResults);
-    handsRef.current = hands;
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 1,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5
+      });
+
+      hands.onResults(onHandResults);
+
+      // Initialize by sending the actual video element
+      // This triggers WASM/graph loading with proper WebGL context
+      console.log('Sending first frame to initialize MediaPipe...');
+      await hands.send({ image: video });
+      console.log('MediaPipe Hands initialized successfully');
+
+      return hands;
+    } catch (error) {
+      console.error('MediaPipe initialization error:', error);
+      return null;
+    }
   }, [onHandResults]);
 
   // Start/Stop camera
@@ -236,15 +308,38 @@ export function useSignRecognition() {
       video.srcObject = stream;
       await video.play();
 
+      // Wait for video to have valid dimensions
+      await new Promise<void>((resolve) => {
+        const checkVideo = () => {
+          if (video.videoWidth > 0 && video.videoHeight > 0) {
+            resolve();
+          } else {
+            requestAnimationFrame(checkVideo);
+          }
+        };
+        checkVideo();
+      });
+
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      // Ensure MediaPipe is initialized
+      // Initialize MediaPipe with the video element
       if (!handsRef.current) {
-        initMediaPipe();
+        const hands = await initMediaPipe(video);
+        if (!hands) {
+          console.error('Failed to initialize MediaPipe');
+          setStatus('error');
+          return;
+        }
+        handsRef.current = hands;
       }
 
-      const camera = new Camera(video, {
+      if (!window.Camera) {
+        console.error('MediaPipe Camera not loaded');
+        return;
+      }
+
+      const camera = new window.Camera(video, {
         onFrame: async () => {
           if (handsRef.current) {
             await handsRef.current.send({ image: video });
@@ -264,12 +359,10 @@ export function useSignRecognition() {
     }
   }, [isRunning, initMediaPipe]);
 
-  // Load model and initialize MediaPipe on mount
+  // Load model on mount
   useEffect(() => {
     loadModel();
-    // Pre-initialize MediaPipe to load WASM files early
-    initMediaPipe();
-  }, [loadModel, initMediaPipe]);
+  }, [loadModel]);
 
   return {
     isRunning,
