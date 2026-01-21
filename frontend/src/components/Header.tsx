@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import logoImg from '../assets/logo_aslSign.png';
 
 interface HeaderProps {
   lang: 'en' | 'fr';
@@ -34,11 +35,11 @@ export function Header({ lang, onToggleLang }: HeaderProps) {
       >
         {/* Logo */}
         <a href="#" className="flex items-center gap-2 z-10">
-          <div className={`rounded-lg bg-indigo-600 flex items-center justify-center transition-all ${
-            isScrolled ? 'w-6 h-6' : 'w-7 h-7'
-          }`}>
-            <span className={`text-white font-bold ${isScrolled ? 'text-[10px]' : 'text-xs'}`}>S</span>
-          </div>
+          <img
+            src={logoImg}
+            alt="S-TRM Logo"
+            className={`object-contain transition-all ${isScrolled ? 'h-7' : 'h-9'}`}
+          />
           <span className={`font-semibold tracking-tight transition-all ${
             isScrolled ? 'text-sm' : 'text-sm'
           }`}>S-TRM</span>

@@ -57,59 +57,59 @@ export const translations = {
   },
   fr: {
     title: "IA Langue des Signes",
-    subtitle: "Inference temps-reel dans le navigateur via",
+    subtitle: "Inférence temps-réel dans le navigateur via",
     architecture: "Architecture S-TRM",
     contact: "Contact",
     showInfo: "Mode d'emploi & Infos",
     howToUse: "Mode d'emploi",
     tips: [
-      "Positionnez votre main a 30-50cm de la camera",
-      "Utilisez un bon eclairage (lumiere naturelle)",
-      "Gardez votre main entierement visible",
-      "Utilisez un arriere-plan uni et contrastant",
-      "Maintenez les signes stables pour plus de precision"
+      "Positionnez votre main à 30-50cm de la caméra",
+      "Utilisez un bon éclairage (lumière naturelle)",
+      "Gardez votre main entièrement visible",
+      "Utilisez un arrière-plan uni et contrastant",
+      "Maintenez les signes stables pour plus de précision"
     ],
-    privacy: "Confidentialite",
+    privacy: "Confidentialité",
     privacyPoints: [
-      "Traitement 100% cote client",
-      "Aucune video envoyee a un serveur",
-      "Aucune collecte ni stockage de donnees",
-      "Acces camera uniquement si active"
+      "Traitement 100% côté client",
+      "Aucune vidéo envoyée à un serveur",
+      "Aucune collecte ni stockage de données",
+      "Accès caméra uniquement si activé"
     ],
     limitations: "Limitations connues",
     limitationPoints: [
-      "J et Z necessitent un mouvement (support limite)",
-      "Detection d'une seule main",
-      "Performances variables selon l'eclairage",
+      "J et Z nécessitent un mouvement (support limité)",
+      "Détection d'une seule main",
+      "Performances variables selon l'éclairage",
       "Pas un traducteur ASL complet"
     ],
-    modelCard: "Fiche Modele",
+    modelCard: "Fiche Modèle",
     specs: {
       architecture: "Architecture",
-      parameters: "Parametres",
-      input: "Entree",
+      parameters: "Paramètres",
+      input: "Entrée",
       classes: "Classes",
       runtime: "Runtime",
-      detection: "Detection Main"
+      detection: "Détection Main"
     },
     spelling: "LETTRES",
     words: "MOTS",
-    start: "Demarrer Camera",
-    stop: "Arreter Camera",
-    loading: "Chargement du modele...",
+    start: "Démarrer Caméra",
+    stop: "Arrêter Caméra",
+    loading: "Chargement du modèle...",
     loadingConfig: "Chargement de la configuration...",
-    loadingOnnx: "Chargement du modele ONNX...",
-    ready: "Pret ! Cliquez sur Demarrer",
+    loadingOnnx: "Chargement du modèle ONNX...",
+    ready: "Prêt ! Cliquez sur Démarrer",
     running: "En cours...",
-    waitingCam: "En attente de la camera",
-    handDetected: "Main detectee",
-    noHand: "Aucune main detectee",
+    waitingCam: "En attente de la caméra",
+    handDetected: "Main détectée",
+    noHand: "Aucune main détectée",
     positionHand: "Positionnez votre main ici",
     confidence: "confiance",
-    topPredictions: "Top Predictions",
+    topPredictions: "Top Prédictions",
     latency: "Latence (ms)",
     params: "Params",
-    footer: "Developpe pour IPSSI MIA4 - 2025 | S-TRM: Stateful Tiny Recursive Model"
+    footer: "Développé pour IPSSI MIA4 - 2025 | S-TRM: Stateful Tiny Recursive Model"
   }
 } as const;
 

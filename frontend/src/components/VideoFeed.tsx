@@ -1,4 +1,5 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface VideoFeedProps {
   isRunning: boolean;
@@ -133,10 +134,14 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
               <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-zinc-900/80 border border-white/10 flex items-center justify-center relative overflow-hidden">
                 {/* Animated gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-500/10 animate-gradient" />
-                {/* Camera icon */}
-                <svg className="w-10 h-10 text-zinc-500 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+                {/* Camera Lottie Animation */}
+                <div className="w-14 h-14 relative z-10">
+                  <DotLottieReact
+                    src="https://lottie.host/b9193d59-942f-4c9d-ad71-2d5d09038363/hSp0icdzZB.lottie"
+                    loop
+                    autoplay
+                  />
+                </div>
               </div>
               <p className="text-xs font-mono text-zinc-500 mb-1">{t('waitingCam')}</p>
               <p className="text-[10px] text-zinc-600">Click Start to begin</p>
