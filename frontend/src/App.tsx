@@ -7,6 +7,7 @@ import { ConfusionMatrixPreview } from './components/ConfusionMatrixPreview';
 import { LatencyChart } from './components/LatencyChart';
 import { translations } from './i18n/translations';
 import { useSignRecognition } from './hooks/useSignRecognition';
+import { useSectionAnalytics } from './lib/analytics/useSectionAnalytics';
 
 type Language = 'en' | 'fr';
 
@@ -18,6 +19,9 @@ interface VideoFeedRef {
 function App() {
   const [lang, setLang] = useState<Language>('en');
   const videoFeedRef = useRef<VideoFeedRef>(null);
+
+  // Initialize section analytics tracking
+  useSectionAnalytics();
 
   const {
     isRunning,
@@ -71,7 +75,7 @@ function App() {
       <Header lang={lang} onToggleLang={handleToggleLang} />
 
       {/* Hero - Minimal */}
-      <section className="pt-24 sm:pt-28 pb-8 px-4 sm:px-6">
+      <section id="hero" className="pt-24 sm:pt-28 pb-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-4">
             Sign Language Recognition
@@ -278,7 +282,7 @@ function App() {
             <span>IPSSI MIA4 2025</span>
           </div>
           <div className="text-xs text-zinc-700">
-            {lang === 'en' ? 'Client-side processing · No data collection · MIT License' : 'Traitement local · Aucune collecte · Licence MIT'}
+            {lang === 'en' ? 'Client-side processing · Anonymous stats · MIT License' : 'Traitement local · Stats anonymes · Licence MIT'}
           </div>
         </div>
       </footer>

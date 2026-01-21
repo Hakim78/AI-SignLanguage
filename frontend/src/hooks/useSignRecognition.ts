@@ -5,6 +5,9 @@ import { Camera } from '@mediapipe/camera_utils';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import * as ort from 'onnxruntime-web';
 
+// Configure ONNX Runtime WASM paths to use CDN
+ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/';
+
 interface Config {
   class_names: string[];
   scaler: {
