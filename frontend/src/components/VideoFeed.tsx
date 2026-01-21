@@ -1,4 +1,5 @@
 import { useRef, forwardRef, useImperativeHandle } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 interface VideoFeedProps {
   isRunning: boolean;
@@ -98,11 +99,15 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
               <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-violet-400 rounded-tr-lg" />
               <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-violet-400 rounded-bl-lg" />
               <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-violet-400 rounded-br-lg" />
-              {/* Hand icon */}
+              {/* Hand scan Lottie */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="w-16 h-16 text-violet-400/60 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
-                </svg>
+                <div className="w-28 h-28">
+                  <DotLottieReact
+                    src="https://lottie.host/6416a8a8-714b-4335-aae1-8b9f6a3d7a82/ZQ68fHVUqK.lottie"
+                    loop
+                    autoplay
+                  />
+                </div>
               </div>
               {/* Instruction text */}
               <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 whitespace-nowrap">
@@ -118,10 +123,12 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
         {!isRunning && (
           <div className="absolute inset-0 flex items-center justify-center bg-zinc-900/50">
             <div className="text-center">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
+              <div className="w-24 h-24 mx-auto mb-4">
+                <DotLottieReact
+                  src="https://lottie.host/b9193d59-942f-4c9d-ad71-2d5d09038363/hSp0icdzZB.lottie"
+                  loop
+                  autoplay
+                />
               </div>
               <p className="text-zinc-500 text-sm">{t('waitingCam')}</p>
             </div>
@@ -135,25 +142,35 @@ export const VideoFeed = forwardRef<VideoFeedRef, VideoFeedProps>(({
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => onModeChange('SPELLING')}
-            className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
+            className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
               currentMode === 'SPELLING'
                 ? 'bg-violet-600 text-white'
                 : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
             }`}
           >
-            {t('spelling')}
-            <span className="block text-xs opacity-70 mt-0.5">A-Z</span>
+            <div className="w-10 h-10 -mt-1 -mb-1">
+              <DotLottieReact
+                src="https://lottie.host/991d2e44-8657-4beb-a3fb-db93f543358c/NdsOxVga9Y.lottie"
+                loop
+                autoplay
+              />
+            </div>
+            <span className="text-xs opacity-70">{t('spelling')}</span>
           </button>
           <button
             onClick={() => onModeChange('WORD')}
-            className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all ${
+            className={`py-2.5 px-3 rounded-lg text-sm font-medium transition-all flex flex-col items-center justify-center ${
               currentMode === 'WORD'
                 ? 'bg-violet-600 text-white'
                 : 'bg-white/5 text-zinc-400 hover:bg-white/10 hover:text-white'
             }`}
           >
-            {t('words')}
-            <span className="block text-xs opacity-70 mt-0.5">HELLO, YES...</span>
+            <span className="text-lg mb-1">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </span>
+            <span className="text-xs opacity-70">{t('words')}</span>
           </button>
         </div>
 

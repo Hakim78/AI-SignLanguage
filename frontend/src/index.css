@@ -151,6 +151,15 @@ body {
   animation: success-glow 1s ease-in-out;
 }
 
+/* Animated dash for How It Works arrows */
+@keyframes dash {
+  to { stroke-dashoffset: -100; }
+}
+
+.animate-dash {
+  animation: dash 8s linear infinite;
+}
+
 /* Focus styles */
 button:focus-visible,
 a:focus-visible {

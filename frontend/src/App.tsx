@@ -2,8 +2,10 @@ import { useState, useRef, useCallback } from 'react';
 import { Header } from './components/Header';
 import { VideoFeed } from './components/VideoFeed';
 import { PredictionPanel } from './components/PredictionPanel';
+import HowItWorksSection from './components/HowItWorksSection';
 import { translations } from './i18n/translations';
 import { useSignRecognition } from './hooks/useSignRecognition';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 type Language = 'en' | 'fr';
 
@@ -63,16 +65,6 @@ function App() {
     }
   }, [status, loadingProgress, t]);
 
-  const steps = lang === 'en' ? [
-    { title: 'Start Camera', desc: 'Enable your webcam to begin. All processing happens locally on your device.' },
-    { title: 'Show a Sign', desc: 'Position your hand 30-50cm from camera with good lighting.' },
-    { title: 'Get Results', desc: 'See real-time predictions with confidence scores.' }
-  ] : [
-    { title: 'Demarrer', desc: 'Activez votre webcam. Tout le traitement se fait localement.' },
-    { title: 'Montrer un Signe', desc: 'Positionnez votre main a 30-50cm avec un bon eclairage.' },
-    { title: 'Resultats', desc: 'Voyez les predictions en temps reel avec les scores.' }
-  ];
-
   const specs = [
     { label: 'Architecture', value: 'S-TRM' },
     { label: lang === 'en' ? 'Parameters' : 'Parametres', value: '79K' },
@@ -119,35 +111,7 @@ function App() {
       </section>
 
       {/* How it works */}
-      <section id="how-it-works" className="py-12 sm:py-16 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold mb-3">
-              {lang === 'en' ? 'How it works' : 'Comment ca marche'}
-            </h2>
-            <p className="text-zinc-500 text-sm sm:text-base">
-              {lang === 'en' ? 'Three simple steps to get started' : 'Trois etapes simples pour commencer'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {steps.map((step, i) => (
-              <div key={i} className="relative">
-                <div className="card p-6 h-full">
-                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-4">
-                    <span className="text-violet-400 font-semibold">{i + 1}</span>
-                  </div>
-                  <h3 className="font-semibold mb-2">{step.title}</h3>
-                  <p className="text-zinc-500 text-sm leading-relaxed">{step.desc}</p>
-                </div>
-                {i < 2 && (
-                  <div className="hidden md:block step-line" />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorksSection language={lang} />
 
       {/* Demo */}
       <section id="demo" className="py-12 sm:py-16 px-4">
@@ -223,10 +187,12 @@ function App() {
           {/* Privacy notice */}
           <div className="card p-6 mb-8 border-green-500/20">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+              <div className="w-16 h-16 flex-shrink-0 -ml-2 -mt-2">
+                <DotLottieReact
+                  src="https://lottie.host/e1c2ab12-3852-4cbc-8eca-c6037469eea1/l9f1TWlH3g.lottie"
+                  loop
+                  autoplay
+                />
               </div>
               <div>
                 <h3 className="font-semibold mb-1">
@@ -243,6 +209,13 @@ function App() {
 
           {/* Team */}
           <div className="text-center">
+            <div className="w-24 h-24 mx-auto mb-4">
+              <DotLottieReact
+                src="https://lottie.host/f5b74eb2-0985-4c6c-8f67-6a1000b9bf0f/R6PHcntLFr.lottie"
+                loop
+                autoplay
+              />
+            </div>
             <h3 className="text-sm font-medium text-zinc-400 uppercase tracking-wide mb-6">
               {lang === 'en' ? 'Development Team' : 'Equipe de Developpement'}
             </h3>
