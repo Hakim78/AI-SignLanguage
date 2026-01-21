@@ -194,7 +194,9 @@ export function useSignRecognition() {
   }, []);
 
   // Initialize MediaPipe
-  const initMediaPipe = useCallback(async () => {
+  const initMediaPipe = useCallback(() => {
+    if (handsRef.current) return;
+
     const hands = new Hands({
       locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
     });
@@ -207,10 +209,6 @@ export function useSignRecognition() {
     });
 
     hands.onResults(onHandResults);
-
-    // Initialize MediaPipe (load WASM and model)
-    await hands.initialize();
-
     handsRef.current = hands;
   }, [onHandResults]);
 
@@ -228,9 +226,6 @@ export function useSignRecognition() {
     }
 
     try {
-      setStatus('loading');
-      setLoadingProgress(80);
-
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 640, height: 480, facingMode: 'user' }
       });
@@ -241,12 +236,10 @@ export function useSignRecognition() {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
+      // Ensure MediaPipe is initialized
       if (!handsRef.current) {
-        setLoadingProgress(90);
-        await initMediaPipe();
+        initMediaPipe();
       }
-
-      setLoadingProgress(100);
 
       const camera = new Camera(video, {
         onFrame: async () => {
@@ -268,10 +261,12 @@ export function useSignRecognition() {
     }
   }, [isRunning, initMediaPipe]);
 
-  // Load model on mount
+  // Load model and initialize MediaPipe on mount
   useEffect(() => {
     loadModel();
-  }, [loadModel]);
+    // Pre-initialize MediaPipe to load WASM files early
+    initMediaPipe();
+  }, [loadModel, initMediaPipe]);
 
   return {
     isRunning,
