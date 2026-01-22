@@ -119,6 +119,7 @@ function App() {
                 isModelReady={isModelReady}
                 handDetected={handDetected}
                 t={t}
+                language={lang}
               />
             </div>
 

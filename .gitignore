@@ -1,4 +1,3 @@
-@"
 # Python/venv
 .venv/
 __pycache__/
@@ -20,4 +19,11 @@ outputs/figures/
 # Data
 data/
 !data/.gitkeep
-"@ | Set-Content .gitignore -Encoding UTF8
+
+# Vercel
+.vercel
+
+# Windows reserved names (problematic files)
+nul
+NUL
+frontend/nul
