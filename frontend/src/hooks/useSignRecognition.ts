@@ -77,6 +77,8 @@ export function useSignRecognition() {
   const lastFpsTimeRef = useRef(performance.now());
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const onHandResultsRef = useRef<((results: HandResults) => void) | null>(null);
 
   // Softmax function
   const softmax = useCallback((logits: number[]): number[] => {
@@ -214,6 +216,9 @@ export function useSignRecognition() {
     }
   }, [normalize, softmax, applyModeMask]);
 
+  // Keep ref updated with latest callback (fixes stale closure issue)
+  onHandResultsRef.current = onHandResults;
+
   // Load model
   const loadModel = useCallback(async () => {
     try {
@@ -272,7 +277,13 @@ export function useSignRecognition() {
         minTrackingConfidence: 0.5
       });
 
-      hands.onResults(onHandResults);
+      // Use a wrapper that always calls the latest callback from ref
+      // This prevents stale closure issues when mode changes
+      hands.onResults((results: HandResults) => {
+        if (onHandResultsRef.current) {
+          onHandResultsRef.current(results);
+        }
+      });
 
       // Initialize by sending the actual video element
       // This triggers WASM/graph loading with proper WebGL context
@@ -285,7 +296,50 @@ export function useSignRecognition() {
       console.error('MediaPipe initialization error:', error);
       return null;
     }
-  }, [onHandResults]);
+  }, []);
+
+  // Cleanup function for stopping camera properly
+  const cleanupCamera = useCallback(() => {
+    console.log('Cleaning up camera resources...');
+
+    // Stop MediaPipe Camera
+    if (cameraRef.current) {
+      try {
+        cameraRef.current.stop();
+      } catch (e) {
+        console.warn('Error stopping MediaPipe camera:', e);
+      }
+      cameraRef.current = null;
+    }
+
+    // Stop all media stream tracks (releases camera hardware)
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => {
+        track.stop();
+        console.log('Stopped track:', track.kind);
+      });
+      streamRef.current = null;
+    }
+
+    // Clear video source
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+
+    // Clear canvas
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+      }
+    }
+
+    // Reset MediaPipe Hands instance to force reinitialization
+    // This prevents issues with stale WebGL contexts
+    handsRef.current = null;
+
+    console.log('Camera cleanup complete');
+  }, []);
 
   // Start/Stop camera
   const toggleCamera = useCallback(async (video: HTMLVideoElement, canvas: HTMLCanvasElement) => {
@@ -293,25 +347,45 @@ export function useSignRecognition() {
     canvasRef.current = canvas;
 
     if (isRunning) {
-      cameraRef.current?.stop();
+      cleanupCamera();
       setIsRunning(false);
       setStatus('ready');
       setHandDetected(false);
+      setPrediction('-');
+      setConfidence(0);
+      setTopPredictions([]);
+      setFps(0);
+      setLatency(0);
       return;
     }
 
     try {
+      // Ensure any previous stream is cleaned up first
+      cleanupCamera();
+
+      // Small delay to ensure camera hardware is released
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      console.log('Requesting camera access...');
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: 640, height: 480, facingMode: 'user' }
       });
+
+      // Store stream reference for cleanup
+      streamRef.current = stream;
 
       video.srcObject = stream;
       await video.play();
 
       // Wait for video to have valid dimensions
-      await new Promise<void>((resolve) => {
+      await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error('Video dimensions timeout'));
+        }, 5000);
+
         const checkVideo = () => {
           if (video.videoWidth > 0 && video.videoHeight > 0) {
+            clearTimeout(timeout);
             resolve();
           } else {
             requestAnimationFrame(checkVideo);
@@ -323,26 +397,37 @@ export function useSignRecognition() {
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
 
-      // Initialize MediaPipe with the video element
-      if (!handsRef.current) {
-        const hands = await initMediaPipe(video);
-        if (!hands) {
-          console.error('Failed to initialize MediaPipe');
-          setStatus('error');
-          return;
-        }
-        handsRef.current = hands;
+      console.log(`Video dimensions: ${video.videoWidth}x${video.videoHeight}`);
+
+      // Always reinitialize MediaPipe for a fresh start
+      console.log('Initializing MediaPipe Hands...');
+      const hands = await initMediaPipe(video);
+      if (!hands) {
+        console.error('Failed to initialize MediaPipe');
+        cleanupCamera();
+        setStatus('error');
+        return;
       }
+      handsRef.current = hands;
 
       if (!window.Camera) {
         console.error('MediaPipe Camera not loaded');
+        cleanupCamera();
+        setStatus('error');
         return;
       }
 
       const camera = new window.Camera(video, {
         onFrame: async () => {
-          if (handsRef.current) {
-            await handsRef.current.send({ image: video });
+          if (handsRef.current && streamRef.current) {
+            try {
+              await handsRef.current.send({ image: video });
+            } catch (e) {
+              // Ignore errors when camera is being stopped
+              if (streamRef.current) {
+                console.warn('Frame processing error:', e);
+              }
+            }
           }
         },
         width: 640,
@@ -353,16 +438,37 @@ export function useSignRecognition() {
       cameraRef.current = camera;
       setIsRunning(true);
       setStatus('running');
+      console.log('Camera started successfully');
     } catch (error) {
       console.error('Camera error:', error);
+      cleanupCamera();
       setStatus('error');
     }
-  }, [isRunning, initMediaPipe]);
+  }, [isRunning, initMediaPipe, cleanupCamera]);
 
   // Load model on mount
   useEffect(() => {
     loadModel();
   }, [loadModel]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      console.log('Component unmounting, cleaning up...');
+      // Stop MediaPipe Camera
+      if (cameraRef.current) {
+        try {
+          cameraRef.current.stop();
+        } catch (e) {
+          console.warn('Error stopping camera on unmount:', e);
+        }
+      }
+      // Stop all media stream tracks
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
 
   return {
     isRunning,
