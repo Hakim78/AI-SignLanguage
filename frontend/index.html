@@ -9,10 +9,182 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="S-TRM" />
 
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="SCGB6n9jhKBj2-t4btYZZvPhUrUjB9pUcKg0Rg3jwy0" />
+
+    <!-- SEO Meta Tags -->
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="keywords" content="ASL, sign language, recognition, AI, machine learning, S-TRM, real-time, browser, accessibility, deep learning, computer vision" />
+    <meta name="author" content="IPSSI MIA4" />
+    <link rel="canonical" href="https://asl-sign-recognition.vercel.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://asl-sign-recognition.vercel.app/" />
+    <meta property="og:title" content="S-TRM | AI Sign Language Recognition" />
+    <meta property="og:description" content="Real-time ASL sign language recognition powered by S-TRM architecture. Runs entirely in your browser with complete privacy." />
+    <meta property="og:image" content="https://asl-sign-recognition.vercel.app/logo.png" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="fr_FR" />
+    <meta property="og:site_name" content="S-TRM Sign Language Recognition" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://asl-sign-recognition.vercel.app/" />
+    <meta name="twitter:title" content="S-TRM | AI Sign Language Recognition" />
+    <meta name="twitter:description" content="Real-time ASL sign language recognition powered by S-TRM architecture. Runs entirely in your browser with complete privacy." />
+    <meta name="twitter:image" content="https://asl-sign-recognition.vercel.app/logo.png" />
+
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="manifest" href="/manifest.json" />
 
     <title>S-TRM | Sign Language Recognition</title>
+
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://asl-sign-recognition.vercel.app/#organization",
+          "name": "S-TRM Sign Language Recognition",
+          "url": "https://asl-sign-recognition.vercel.app/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://asl-sign-recognition.vercel.app/logo.png",
+            "width": 512,
+            "height": 512
+          },
+          "description": "AI-powered sign language recognition technology for accessibility",
+          "sameAs": [
+            "https://github.com/your-repo/asl-sign-recognition"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://asl-sign-recognition.vercel.app/#website",
+          "url": "https://asl-sign-recognition.vercel.app/",
+          "name": "S-TRM Sign Language Recognition",
+          "description": "Real-time ASL sign language recognition powered by S-TRM architecture",
+          "publisher": {
+            "@id": "https://asl-sign-recognition.vercel.app/#organization"
+          },
+          "inLanguage": ["en-US", "fr-FR"],
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://asl-sign-recognition.vercel.app/?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://asl-sign-recognition.vercel.app/#webapp",
+          "name": "S-TRM Sign Language Recognition",
+          "description": "Real-time American Sign Language (ASL) recognition using deep learning. Runs entirely in your browser with WebAssembly for complete privacy.",
+          "url": "https://asl-sign-recognition.vercel.app/",
+          "applicationCategory": "UtilitiesApplication",
+          "operatingSystem": "Any",
+          "browserRequirements": "Requires JavaScript, WebAssembly, and camera access",
+          "softwareVersion": "1.2",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "featureList": [
+            "Real-time ASL alphabet recognition",
+            "Browser-based inference with WebAssembly",
+            "Privacy-first: no data sent to servers",
+            "Support for 26 ASL letters",
+            "Low latency inference (~45ms)",
+            "Works offline after initial load"
+          ],
+          "screenshot": "https://asl-sign-recognition.vercel.app/logo.png",
+          "author": {
+            "@id": "https://asl-sign-recognition.vercel.app/#organization"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://asl-sign-recognition.vercel.app/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://asl-sign-recognition.vercel.app/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Sign Recognition",
+              "item": "https://asl-sign-recognition.vercel.app/#recognition"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Technical Specifications",
+              "item": "https://asl-sign-recognition.vercel.app/#specs"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "How It Works",
+              "item": "https://asl-sign-recognition.vercel.app/#how-it-works"
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://asl-sign-recognition.vercel.app/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is S-TRM Sign Language Recognition?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "S-TRM is a real-time American Sign Language (ASL) recognition application that uses deep learning to identify hand signs. It runs entirely in your browser using WebAssembly technology, ensuring complete privacy as no data is sent to external servers."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How accurate is the sign language recognition?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The S-TRM model achieves 94.2% accuracy on the test set with an F1 score of 0.89. The inference latency is approximately 45ms, enabling real-time recognition."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is my camera data private?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, absolutely. All processing happens locally in your browser using WebAssembly. No video or image data is ever sent to any server. Your privacy is completely protected."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What signs can the application recognize?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The application can recognize all 26 letters of the American Sign Language (ASL) alphabet, enabling fingerspelling communication."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "S-TRM Model",
+          "description": "Stateful Tiny Recursive Model - A lightweight deep learning architecture optimized for real-time sign language recognition",
+          "applicationCategory": "Machine Learning Model",
+          "operatingSystem": "Browser (WebAssembly)",
+          "softwareRequirements": "ONNX Runtime Web",
+          "memoryRequirements": "340 KB"
+        }
+      ]
+    }
+    </script>
 
     <!-- MediaPipe - pinned versions for stability -->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js" crossorigin="anonymous"></script>
